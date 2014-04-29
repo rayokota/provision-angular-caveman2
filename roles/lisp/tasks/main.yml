@@ -1,0 +1,37 @@
+---
+- name: Install build-essential
+  apt: pkg=build-essential
+
+- name: Get SBCL
+  get_url: url=http://downloads.sourceforge.net/project/sbcl/sbcl/1.1.18/sbcl-1.1.18-x86-64-linux-binary.tar.bz2 dest=/tmp/sbcl-1.1.18-x86-64-linux-binary.tar.bz2
+ 
+- name: Unarchive SBCL
+  unarchive: src=/tmp/sbcl-1.1.18-x86-64-linux-binary.tar.bz2 dest=/tmp
+ 
+- name: Install SBCL
+  command: chdir=/tmp/sbcl-1.1.18-x86-64-linux sh install.sh
+ 
+- name: Get Quicklisp
+  get_url: url=http://beta.quicklisp.org/quicklisp.lisp dest=/tmp/quicklisp.lisp mode=0440
+  sudo: false
+
+- name: Install Quicklisp
+  command: sbcl --non-interactive --load /tmp/quicklisp.lisp --eval '(quicklisp-quickstart:install)' creates=~/quicklisp
+  sudo: false
+ 
+- name: Copy .sbclrc
+  copy: src=sbclrc dest=~/.sbclrc mode=644 force=no
+  sudo: false
+
+- name: Install shelly
+  shell: curl -L http://shlyfile.org/shly | LISP_IMPL=sbcl perl - install
+  sudo: false
+
+- name: Add SBCL_HOME
+  lineinfile: dest=~/.bashrc regexp=^SBCL_HOME line="export SBCL_HOME=/usr/local/lib/sbcl" state=present
+  sudo: false
+
+- name: Add shelly to PATH
+  lineinfile: dest=~/.bashrc regexp=shelly line="export PATH=$PATH:$HOME/.shelly/bin" state=present
+  sudo: false
+
