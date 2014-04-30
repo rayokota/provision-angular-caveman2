@@ -23,6 +23,19 @@
   copy: src=sbclrc dest=~/.sbclrc mode=644 force=no
   sudo: false
 
+- name: Install Caveman2
+  command: sbcl --non-interactive --eval '(ql:quickload :caveman2)'
+  sudo: false
+
+- name: Install Integral
+#  command: sbcl --non-interactive --eval '(ql:quickload :integral)'
+  git: repo=https://github.com/fukamachi/integral dest=~/quicklisp/local-projects/integral
+  sudo: false
+
+- name: Remove Integral README (since has ASCII stream decoding error)
+  file: path=~/quicklisp/local-projects/integral/README.markdown state=absent
+  sudo: false
+
 - name: Install shelly
   shell: curl -L http://shlyfile.org/shly | LISP_IMPL=sbcl perl - install
   sudo: false
@@ -33,5 +46,9 @@
 
 - name: Add shelly to PATH
   lineinfile: dest=~/.bashrc regexp=shelly line="export PATH=$PATH:$HOME/.shelly/bin" state=present
+  sudo: false
+
+- name: Comment out line which prevents loading bash profile by ssh
+  lineinfile: dest=~/.bashrc regexp='[ -z "$PS1" ] && return' line='# [ -z "$PS1" ] && return' state=present
   sudo: false
 

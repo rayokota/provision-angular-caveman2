@@ -20,9 +20,9 @@
   sudo: false
 
 - name: Run application
-  shell: chdir=/tmp/testapp nohup APP_ENV=development shly -Lclack clackup app.lisp --port 8080 >app.log 2>&1 &
+  shell: chdir=/tmp/testapp APP_ENV=development nohup shly -Lclack clackup app.lisp --port 8080 >app.log 2>&1 &
   sudo: false
-  async: 600
+  async: 60
   poll: 0
 
 - name: Wait for application
